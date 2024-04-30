@@ -1,3 +1,4 @@
+import flask
 import sqlalchemy
 from flask import Flask, render_template, request
 from data import db_session
@@ -166,7 +167,7 @@ def edit_news(id):
             form.content.data = news.content
             form.address.data = news.address
         else:
-            abort(404)
+            flask.abort(404)
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         news = db_sess.query(News).filter(News.id == id,
@@ -197,7 +198,7 @@ def edit_news(id):
             photo_reload(ad, k)
             return redirect('/')
         else:
-            abort(404)
+            flask.abort(404)
     return render_template('news.html',
                            title='Редактирование новости',
                            form=form
@@ -219,7 +220,7 @@ def news_delete(id):
         os.remove(k)
         os.remove(p)
     else:
-        abort(404)
+        flask.abort(404)
     return redirect('/')
 
 
