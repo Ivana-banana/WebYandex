@@ -29,14 +29,14 @@ def load_user(user_id):
 def index():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id > 0)
-    return render_template("index.html", news=news)
+    return render_template("index.html", news=news[::-1])
 
 
 @app.route("/my_records")
 def records():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id > 0)
-    return render_template("records.html", news=news)
+    return render_template("records.html", news=news[::-1])
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -89,15 +89,23 @@ def add_news():
     form = NewsForm()
     if form.validate_on_submit():
         f = open("static/fonts/iterators.txt", encoding="utf8")
-        h = int(f.read())
+        g = int(f.read())
+        h = ""
         f.close()
+        if request.method == 'POST':
+            ph = request.files['file']
+            if ph:
+                h = f"static/photos/photo{g}.jpg"
+                with open(h, "wb") as file:
+                    file.write(ph.read())
         db_sess = db_session.create_session()
         news = News()
         news.type = form.type.data
         news.content = form.content.data
         news.address = form.address.data
-        news.image = f"static/img/image{h}.png"
+        news.image = f"static/img/image{g}.png"
         k = form.address.data
+        news.photo = h
         current_user.news.append(news)
         db_sess.merge(current_user)
         db_sess.commit()
@@ -164,10 +172,25 @@ def edit_news(id):
         news = db_sess.query(News).filter(News.id == id,
                                           News.user == current_user
                                           ).first()
+        p = news.photo
+        k = news.image[(news.image.index("e") + 1):news.image.index(".")]
+        if request.method == 'POST':
+            ph = request.files['file']
+            if ph:
+                if p != "":
+                    with open(p, "wb") as file:
+                        file.write(ph.read())
+                if p == "":
+                    p = f"static/photos/photo{k}.jpg"
+                    with open(p, "wb") as file:
+                        file.write(ph.read())
+            else:
+                p = ""
         if news:
             news.type = form.type.data
             news.content = form.content.data
             news.address = form.address.data
+            news.photo = p
             ad = form.address.data
             k = news.image
             db_sess.commit()
@@ -190,9 +213,11 @@ def news_delete(id):
                                       ).first()
     if news:
         k = news.image
+        p = news.photo
         db_sess.delete(news)
         db_sess.commit()
         os.remove(k)
+        os.remove(p)
     else:
         abort(404)
     return redirect('/')

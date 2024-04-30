@@ -18,9 +18,16 @@ crossorigin="anonymous">
 {% for item in news%}
 <div class="alert alert-primary" role="alert">
      <h2 class="text-center">{{item.type}}</h2>
+    {%if item.photo != "" %}
     <div>
-        <img src="{{item.image}}" style="width=70%"> <h4 class="text-right">{{item.content}}</h4>
+            <img src="{{item.image}}" style="width=70%"> <img src="{{item.photo}}" width="350" height="451" style="position: relative; top: 0px; left: 160px">
     </div>
+    {% else %}
+    <div>
+            <img src="{{item.image}}" style="width=70%">
+    </div>
+    {% endif %}
+    <h4 class="text-right">{{item.content}}</h4>
     <div>
         Автор - {{item.user.name}}  {{ item.user.surname }}, Дата написания - {{item.created_date}}
     </div>

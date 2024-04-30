@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1 align="center">Добавление события</h1>
-<form action="" method="post">
+<form method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <p>
         {{ form.type.label }}<br>
@@ -30,6 +30,12 @@
                 {{ error }}
             </p>
         {% endfor %}
+    </p>
+    <p>
+    <div class="form-group">
+                                    <label for="photo">Приложите фото</label>
+                                    <input type="file" class="form-control-file" id="photo" name="file">
+                                </div>
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
