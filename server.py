@@ -218,7 +218,8 @@ def news_delete(id):
         db_sess.delete(news)
         db_sess.commit()
         os.remove(k)
-        os.remove(p)
+        if p != "":
+            os.remove(p)
     else:
         flask.abort(404)
     return redirect('/')
